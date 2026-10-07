@@ -175,134 +175,56 @@
 
   <div class="month-tabs">
     <button class="tab-btn active" onclick="switchMonth('All', this)">All</button>
-    <button class="tab-btn" onclick="switchMonth('month1', this)">Month 1</button>
-    <button class="tab-btn" onclick="switchMonth('month2', this)">Month 2</button>
-    <button class="tab-btn" onclick="switchMonth('month3', this)">Month 3</button>
-    <button class="tab-btn" onclick="switchMonth('month4', this)">Month 4</button>
-    <button class="tab-btn" onclick="switchMonth('month5', this)">Month 5</button>
-    <button class="tab-btn" onclick="switchMonth('month6', this)">Month 6</button>
-    <button class="tab-btn" onclick="switchMonth('month7', this)">Month 7</button>
-    <button class="tab-btn" onclick="switchMonth('month8', this)">Month 8</button>
-    <button class="tab-btn" onclick="switchMonth('month9', this)">Month 9</button>
-    <button class="tab-btn" onclick="switchMonth('month10', this)">Month 10</button>
-    <button class="tab-btn" onclick="switchMonth('month11', this)">Month 11</button>
-    <button class="tab-btn" onclick="switchMonth('month12', this)">Month 12</button>
+    <button class="tab-btn" onclick="switchMonth(1, this)">Month 1</button>
+    <button class="tab-btn" onclick="switchMonth(2, this)">Month 2</button>
+    <button class="tab-btn" onclick="switchMonth(3, this)">Month 3</button>
+    <button class="tab-btn" onclick="switchMonth(4, this)">Month 4</button>
+    <button class="tab-btn" onclick="switchMonth(5, this)">Month 5</button>
+    <button class="tab-btn" onclick="switchMonth(6, this)">Month 6</button>
+    <button class="tab-btn" onclick="switchMonth(7, this)">Month 7</button>
+    <button class="tab-btn" onclick="switchMonth(8, this)">Month 8</button>
+    <button class="tab-btn" onclick="switchMonth(9, this)">Month 9</button>
+    <button class="tab-btn" onclick="switchMonth(10, this)">Month 10</button>
+    <button class="tab-btn" onclick="switchMonth(11, this)">Month 11</button>
+    <button class="tab-btn" onclick="switchMonth(12, this)">Month 12</button>
   </div>
 
-  <div class="grid" id="photo-grid">
-    <div class="loading-msg">Loading memories...</div>
-  </div>
+  <div class="grid" id="photo-grid"></div>
 
   <script>
-    // Updated to match your exact repository details
     const repoOwner = 'felixgabby09-coder';
     const repoName = 'Baobeii-labyuu';
 
-    let allPhotos = [];
-    let currentFilter = 'All';
+    // 1. HARDCODED FALLBACK LIST (Guarantees instant loading even if GitHub API is blocked)
+    const knownPhotos = {
+      1: [
+        'IMG_6200.jpeg', 'IMG_6203.jpeg', 'IMG_6217.jpeg',
+        'IMG_6256.jpeg', 'IMG_6333.jpeg', 'IMG_6340.jpeg',
+        'IMG_6473.jpeg', 'IMG_6548.jpeg', 'IMG_6660.jpeg'
+      ],
+      2: [], 3: [], 4: [], 5: [], 6: [], 7: [], 8: [], 9: [], 10: [], 11: [], 12: []
+    };
 
-    async function fetchAllRepoPhotos() {
-      const cacheKey = 'baobei_photos_cache_v3';
-      const cacheTimeKey = 'baobei_photos_time_v3';
+    let photosMap = JSON.parse(JSON.stringify(knownPhotos));
+    let activeMonth = 'All';
 
-      // Clear any outdated/broken cache stored previously
-      localStorage.removeItem('baobei_photos_cache');
-      localStorage.removeItem('baobei_photos_cache_v2');
-
-      const cachedData = localStorage.getItem(cacheKey);
-      const cachedTime = localStorage.getItem(cacheTimeKey);
-
-      // Only use cache if it actually contains photos
-      if (cachedData && cachedTime && (Date.now() - cachedTime < 5 * 60 * 1000)) {
-        const parsed = JSON.parse(cachedData);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed;
-        }
-      }
-
-      try {
-        let response = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/git/trees/main?recursive=1`);
-        if (!response.ok) {
-          response = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/git/trees/master?recursive=1`);
-        }
-        if (!response.ok) throw new Error("API Limit or Repo Error");
-
-        const data = await response.json();
-        const validPhotos = (data.tree || []).filter(item => 
-          item.type === 'blob' && 
-          /^images\/month\d+\/.*\.(jpg|jpeg|png|webp|gif|heic)$/i.test(item.path)
-        );
-
-        if (validPhotos.length > 0) {
-          localStorage.setItem(cacheKey, JSON.stringify(validPhotos));
-          localStorage.setItem(cacheTimeKey, Date.now());
-        } else {
-          localStorage.removeItem(cacheKey);
-        }
-
-        return validPhotos;
-      } catch (e) {
-        console.error("Fetch error:", e);
-        localStorage.removeItem(cacheKey);
-        return [];
-      }
-    }
-
-    async function displayPhotos() {
+    // Render photos immediately from local files
+    function renderGrid() {
       const grid = document.getElementById('photo-grid');
-      
-      if (allPhotos.length === 0) {
-        grid.innerHTML = '<div class="loading-msg">Loading memories...</div>';
-        allPhotos = await fetchAllRepoPhotos();
-      }
-
       grid.innerHTML = '';
 
-      const filtered = currentFilter === 'All'
-        ? allPhotos
-        : allPhotos.filter(item => item.path.toLowerCase().startsWith(`images/${currentFilter.toLowerCase()}/`));
+      let list = [];
+      if (activeMonth === 'All') {
+        for (let m = 1; m <= 12; m++) {
+          (photosMap[m] || []).forEach(f => list.push({ month: m, file: f }));
+        }
+      } else {
+        (photosMap[activeMonth] || []).forEach(f => list.push({ month: activeMonth, file: f }));
+      }
 
-      if (filtered.length === 0) {
+      if (list.length === 0) {
         grid.innerHTML = '<div class="loading-msg">No photos uploaded for this month yet!</div>';
         return;
       }
 
-      filtered.forEach(item => {
-        const card = document.createElement('div');
-        card.className = 'card';
-
-        const img = document.createElement('img');
-        img.src = `https://raw.githubusercontent.com/${repoOwner}/${repoName}/main/${item.path}`;
-        img.alt = "Memory";
-        img.loading = "lazy";
-
-        img.onerror = () => {
-          img.src = `https://raw.githubusercontent.com/${repoOwner}/${repoName}/master/${item.path}`;
-        };
-
-        card.appendChild(img);
-        grid.appendChild(card);
-      });
-    }
-
-    function switchMonth(targetMonth, btnElement) {
-      currentFilter = targetMonth;
-      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-      btnElement.classList.add('active');
-      displayPhotos();
-    }
-
-    function toggleAudio() {
-      const audio = document.getElementById('bg-audio');
-      if (audio.paused) {
-        audio.play();
-      } else {
-        audio.pause();
-      }
-    }
-
-    document.addEventListener('DOMContentLoaded', displayPhotos);
-  </script>
-
-</body>
-</html>
+      list.forEach(item => {
