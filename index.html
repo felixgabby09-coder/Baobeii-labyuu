@@ -32,7 +32,6 @@
       color: #b5838d;
     }
 
-    /* Music Button */
     .music-container {
       text-align: center;
       margin-bottom: 20px;
@@ -55,7 +54,6 @@
       transform: scale(1.05);
     }
 
-    /* Anniversary Letter Card */
     .letter-card {
       max-width: 650px;
       margin: 0 auto 30px auto;
@@ -79,7 +77,6 @@
       color: var(--accent-hover);
     }
 
-    /* Month Navigation Tabs */
     .month-tabs {
       display: flex;
       justify-content: center;
@@ -106,7 +103,6 @@
       border-color: var(--accent);
     }
 
-    /* Pinterest Masonry Layout */
     .grid {
       column-count: 2;
       column-gap: 15px;
@@ -115,16 +111,11 @@
     }
 
     @media (min-width: 768px) {
-      .grid {
-        column-count: 3;
-        column-gap: 20px;
-      }
+      .grid { column-count: 3; column-gap: 20px; }
     }
 
     @media (min-width: 1024px) {
-      .grid {
-        column-count: 4;
-      }
+      .grid { column-count: 4; }
     }
 
     .card {
@@ -150,9 +141,8 @@
       border-radius: 12px;
     }
 
-    /* Fixed the squished loading message from the screenshot */
     .loading-msg {
-      column-span: all; 
+      column-span: all;
       text-align: center;
       font-style: italic;
       color: #888;
@@ -167,7 +157,6 @@
     <h1>Baobei & Labidab 1st Anniversary 💖</h1>
   </header>
 
-  <!-- Background Music Controller -->
   <div class="music-container">
     <button class="music-btn" onclick="toggleAudio()">🎵 Play / Pause Music</button>
     <audio id="bg-audio" loop>
@@ -175,7 +164,6 @@
     </audio>
   </div>
 
-  <!-- Love Letter Section -->
   <div class="letter-card">
     <p>“I hate you. I don’t love you anymore. Just leave. I never should’ve forced us. Goodbye, I hope to never see you again.”</p>
     <p>These are words you will never hear me say.</p>
@@ -185,64 +173,98 @@
     <p>I love you baba, I love you.</p>
   </div>
 
-  <!-- Month Selection Tabs -->
   <div class="month-tabs">
     <button class="tab-btn active" onclick="switchMonth('All', this)">All</button>
-    <button class="tab-btn" onclick="switchMonth(1, this)">Month 1</button>
-    <button class="tab-btn" onclick="switchMonth(2, this)">Month 2</button>
-    <button class="tab-btn" onclick="switchMonth(3, this)">Month 3</button>
-    <button class="tab-btn" onclick="switchMonth(4, this)">Month 4</button>
-    <button class="tab-btn" onclick="switchMonth(5, this)">Month 5</button>
-    <button class="tab-btn" onclick="switchMonth(6, this)">Month 6</button>
-    <button class="tab-btn" onclick="switchMonth(7, this)">Month 7</button>
-    <button class="tab-btn" onclick="switchMonth(8, this)">Month 8</button>
-    <button class="tab-btn" onclick="switchMonth(9, this)">Month 9</button>
-    <button class="tab-btn" onclick="switchMonth(10, this)">Month 10</button>
-    <button class="tab-btn" onclick="switchMonth(11, this)">Month 11</button>
-    <button class="tab-btn" onclick="switchMonth(12, this)">Month 12</button>
+    <button class="tab-btn" onclick="switchMonth('month1', this)">Month 1</button>
+    <button class="tab-btn" onclick="switchMonth('month2', this)">Month 2</button>
+    <button class="tab-btn" onclick="switchMonth('month3', this)">Month 3</button>
+    <button class="tab-btn" onclick="switchMonth('month4', this)">Month 4</button>
+    <button class="tab-btn" onclick="switchMonth('month5', this)">Month 5</button>
+    <button class="tab-btn" onclick="switchMonth('month6', this)">Month 6</button>
+    <button class="tab-btn" onclick="switchMonth('month7', this)">Month 7</button>
+    <button class="tab-btn" onclick="switchMonth('month8', this)">Month 8</button>
+    <button class="tab-btn" onclick="switchMonth('month9', this)">Month 9</button>
+    <button class="tab-btn" onclick="switchMonth('month10', this)">Month 10</button>
+    <button class="tab-btn" onclick="switchMonth('month11', this)">Month 11</button>
+    <button class="tab-btn" onclick="switchMonth('month12', this)">Month 12</button>
   </div>
 
-  <div class="grid" id="photo-grid"></div>
+  <div class="grid" id="photo-grid">
+    <div class="loading-msg">Loading memories...</div>
+  </div>
 
   <script>
-    // ZERO-API DIRECT LINK SYSTEM
-    // To add more photos later, simply type the exact filenames inside the brackets below for the correct month.
-    const photos = {
-      1: [
-        'IMG_6200.jpeg', 'IMG_6203.jpeg', 'IMG_6217.jpeg',
-        'IMG_6256.jpeg', 'IMG_6333.jpeg', 'IMG_6340.jpeg',
-        'IMG_6473.jpeg', 'IMG_6548.jpeg', 'IMG_6660.jpeg'
-      ],
-      2: [], 3: [], 4: [], 5: [], 6: [],
-      7: [], 8: [], 9: [], 10: [], 11: [], 12: []
-    };
+    const repoOwner = 'felixgabby09-coder';
+    const repoName = 'Baobei-labidab';
+    let allPhotos = [];
+    let currentFilter = 'All';
 
-    function loadPhotos(monthNum) {
-      const grid = document.getElementById('photo-grid');
-      grid.innerHTML = ''; 
+    // 1-Request Fetcher with 10-Minute Smart Cache
+    async function fetchAllRepoPhotos() {
+      const cacheKey = 'baobei_photos_cache';
+      const cacheTimeKey = 'baobei_photos_time';
+      const cachedData = localStorage.getItem(cacheKey);
+      const cachedTime = localStorage.getItem(cacheTimeKey);
 
-      let list = [];
-      if (monthNum === 'All') {
-        for (let i = 1; i <= 12; i++) {
-          (photos[i] || []).forEach(f => list.push({ m: i, file: f }));
-        }
-      } else {
-        (photos[monthNum] || []).forEach(f => list.push({ m: monthNum, file: f }));
+      // Use cached list if less than 10 minutes old
+      if (cachedData && cachedTime && (Date.now() - cachedTime < 10 * 60 * 1000)) {
+        return JSON.parse(cachedData);
       }
 
-      if (list.length === 0) {
+      try {
+        let response = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/git/trees/main?recursive=1`);
+        if (!response.ok) {
+          response = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/git/trees/master?recursive=1`);
+        }
+        if (!response.ok) throw new Error("API Limit or Repo Error");
+
+        const data = await response.json();
+        const validPhotos = data.tree.filter(item => 
+          item.type === 'blob' && 
+          /^images\/month\d+\/.*\.(jpg|jpeg|png|webp|gif|heic)$/i.test(item.path)
+        );
+
+        localStorage.setItem(cacheKey, JSON.stringify(validPhotos));
+        localStorage.setItem(cacheTimeKey, Date.now());
+        return validPhotos;
+      } catch (e) {
+        console.error("Cache fallback activated:", e);
+        return cachedData ? JSON.parse(cachedData) : [];
+      }
+    }
+
+    async function displayPhotos() {
+      const grid = document.getElementById('photo-grid');
+      
+      if (allPhotos.length === 0) {
+        grid.innerHTML = '<div class="loading-msg">Loading memories...</div>';
+        allPhotos = await fetchAllRepoPhotos();
+      }
+
+      grid.innerHTML = '';
+
+      const filtered = currentFilter === 'All'
+        ? allPhotos
+        : allPhotos.filter(item => item.path.startsWith(`images/${currentFilter}/`));
+
+      if (filtered.length === 0) {
         grid.innerHTML = '<div class="loading-msg">No photos uploaded for this month yet!</div>';
         return;
       }
 
-      list.forEach(item => {
+      filtered.forEach(item => {
         const card = document.createElement('div');
         card.className = 'card';
 
         const img = document.createElement('img');
-        img.src = `images/month${item.m}/${item.file}`;
+        img.src = `https://raw.githubusercontent.com/${repoOwner}/${repoName}/main/${item.path}`;
         img.alt = "Memory";
         img.loading = "lazy";
+
+        // Fallback for repos using 'master' branch
+        img.onerror = () => {
+          img.src = `https://raw.githubusercontent.com/${repoOwner}/${repoName}/master/${item.path}`;
+        };
 
         card.appendChild(img);
         grid.appendChild(card);
@@ -250,9 +272,10 @@
     }
 
     function switchMonth(targetMonth, btnElement) {
+      currentFilter = targetMonth;
       document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
       btnElement.classList.add('active');
-      loadPhotos(targetMonth);
+      displayPhotos();
     }
 
     function toggleAudio() {
@@ -264,10 +287,7 @@
       }
     }
 
-    // Load 'All' photos on startup
-    document.addEventListener('DOMContentLoaded', () => {
-      loadPhotos('All');
-    });
+    document.addEventListener('DOMContentLoaded', displayPhotos);
   </script>
 
 </body>
