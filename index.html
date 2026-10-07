@@ -15,7 +15,7 @@
     }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background-color: var(--bg-color);
       color: var(--text-color);
       margin: 0;
@@ -67,7 +67,6 @@
       color: var(--text-color);
       font-weight: 500;
       cursor: pointer;
-      transition: all 0.2s ease;
     }
 
     .tab-btn.active {
@@ -87,7 +86,6 @@
       height: 140px;
       object-fit: cover;
       border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     }
 
     .status-msg {
@@ -110,10 +108,75 @@
     </div>
 
     <div class="tabs-grid">
-      <button class="tab-btn" onclick="selectTab('all')">All</button>
-      <button class="tab-btn active" onclick="selectTab(1)">Month 1</button>
-      <button class="tab-btn" onclick="selectTab(2)">Month 2</button>
-      <button class="tab-btn" onclick="selectTab(3)">Month 3</button>
-      <button class="tab-btn" onclick="selectTab(4)">Month 4</button>
-      <button class="tab-btn" onclick="selectTab(5)">Month 5</button>
-      <button class="tab-btn" onclick="selectTab(6)">Month 6
+      <button class="tab-btn" onclick="handleTabClick('all', this)">All</button>
+      <button class="tab-btn active" onclick="handleTabClick(1, this)">Month 1</button>
+      <button class="tab-btn" onclick="handleTabClick(2, this)">Month 2</button>
+      <button class="tab-btn" onclick="handleTabClick(3, this)">Month 3</button>
+      <button class="tab-btn" onclick="handleTabClick(4, this)">Month 4</button>
+      <button class="tab-btn" onclick="handleTabClick(5, this)">Month 5</button>
+      <button class="tab-btn" onclick="handleTabClick(6, this)">Month 6</button>
+      <button class="tab-btn" onclick="handleTabClick(7, this)">Month 7</button>
+      <button class="tab-btn" onclick="handleTabClick(8, this)">Month 8</button>
+      <button class="tab-btn" onclick="handleTabClick(9, this)">Month 9</button>
+      <button class="tab-btn" onclick="handleTabClick(10, this)">Month 10</button>
+      <button class="tab-btn" onclick="handleTabClick(11, this)">Month 11</button>
+      <button class="tab-btn" onclick="handleTabClick(12, this)">Month 12</button>
+    </div>
+
+    <div id="gallery" class="photo-gallery">
+      <div class="status-msg">Loading photos...</div>
+    </div>
+  </div>
+
+  <script>
+    const repoOwner = 'felixgabby09-coder';
+    const repoName = 'Baobeii-labyuu';
+
+    async function fetchFolderPhotos(monthNum) {
+      const folderPath = `images/month${monthNum}`;
+      const url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${folderPath}`;
+      try {
+        const response = await fetch(url);
+        if (!response.ok) return [];
+        const items = await response.json();
+        if (!Array.isArray(items)) return [];
+        
+        return items
+          .filter(item => item.type === 'file' && /\.(jpg|jpeg|png|webp|gif)$/i.test(item.name))
+          .map(item => item.download_url);
+      } catch (err) {
+        return [];
+      }
+    }
+
+    async function handleTabClick(month, btnElement) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      if (btnElement) btnElement.classList.add('active');
+      
+      const gallery = document.getElementById('gallery');
+      gallery.innerHTML = '<div class="status-msg">Loading photos...</div>';
+
+      let photoUrls = [];
+
+      if (month === 'all') {
+        for (let i = 1; i <= 12; i++) {
+          const imgs = await fetchFolderPhotos(i);
+          photoUrls = photoUrls.concat(imgs);
+        }
+      } else {
+        photoUrls = await fetchFolderPhotos(month);
+      }
+
+      if (photoUrls.length === 0) {
+        gallery.innerHTML = '<div class="status-msg">No photos found in this folder yet.</div>';
+      } else {
+        gallery.innerHTML = photoUrls.map(url => `<img src="${url}" loading="lazy" />`).join('');
+      }
+    }
+
+    window.addEventListener('load', () => {
+      handleTabClick(1, document.querySelectorAll('.tab-btn')[1]);
+    });
+  </script>
+</body>
+</html>
