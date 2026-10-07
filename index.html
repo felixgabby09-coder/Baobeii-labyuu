@@ -192,39 +192,88 @@
   <div class="grid" id="photo-grid"></div>
 
   <script>
-    const repoOwner = 'felixgabby09-coder';
-    const repoName = 'Baobeii-labyuu';
-
-    // 1. HARDCODED FALLBACK LIST (Guarantees instant loading even if GitHub API is blocked)
-    const knownPhotos = {
+    // ============================================================
+    // YOUR PHOTO LIST (ADD YOUR FILENAMES BELOW FOR EACH MONTH)
+    // ============================================================
+    const myPhotos = {
       1: [
         'IMG_6200.jpeg', 'IMG_6203.jpeg', 'IMG_6217.jpeg',
         'IMG_6256.jpeg', 'IMG_6333.jpeg', 'IMG_6340.jpeg',
         'IMG_6473.jpeg', 'IMG_6548.jpeg', 'IMG_6660.jpeg'
       ],
-      2: [], 3: [], 4: [], 5: [], 6: [], 7: [], 8: [], 9: [], 10: [], 11: [], 12: []
+      2: [
+        // Put Month 2 photo names here when uploaded, e.g.:
+        // 'IMG_7001.jpeg', 'IMG_7002.png'
+      ],
+      3: [], 4: [], 5: [], 6: [],
+      7: [], 8: [], 9: [], 10: [], 11: [], 12: []
     };
 
-    let photosMap = JSON.parse(JSON.stringify(knownPhotos));
     let activeMonth = 'All';
+    const extensionsToTry = ['.jpeg', '.jpg', '.JPG', '.png', '.PNG', '.webp', '.heic'];
 
-    // Render photos immediately from local files
-    function renderGrid() {
+    function renderPhotos() {
       const grid = document.getElementById('photo-grid');
       grid.innerHTML = '';
 
-      let list = [];
+      let photoList = [];
       if (activeMonth === 'All') {
         for (let m = 1; m <= 12; m++) {
-          (photosMap[m] || []).forEach(f => list.push({ month: m, file: f }));
+          (myPhotos[m] || []).forEach(f => photoList.push({ month: m, file: f }));
         }
       } else {
-        (photosMap[activeMonth] || []).forEach(f => list.push({ month: activeMonth, file: f }));
+        (myPhotos[activeMonth] || []).forEach(f => photoList.push({ month: activeMonth, file: f }));
       }
 
-      if (list.length === 0) {
+      if (photoList.length === 0) {
         grid.innerHTML = '<div class="loading-msg">No photos uploaded for this month yet!</div>';
         return;
       }
 
-      list.forEach(item => {
+      photoList.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'card';
+
+        const img = document.createElement('img');
+        img.src = `images/month${item.month}/${item.file}`;
+        img.alt = "Memory";
+        img.loading = "lazy";
+
+        // Auto-fix extension case mismatches (.jpg vs .JPG vs .jpeg)
+        let extIndex = 0;
+        img.onerror = function() {
+          if (extIndex < extensionsToTry.length) {
+            const rawName = item.file.substring(0, item.file.lastIndexOf('.')) || item.file;
+            img.src = `images/month${item.month}/${rawName}${extensionsToTry[extIndex]}`;
+            extIndex++;
+          } else {
+            card.style.display = 'none'; // Hide if file truly doesn't exist
+          }
+        };
+
+        card.appendChild(img);
+        grid.appendChild(card);
+      });
+    }
+
+    function switchMonth(monthNum, btnElement) {
+      activeMonth = monthNum;
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      btnElement.classList.add('active');
+      renderPhotos();
+    }
+
+    function toggleAudio() {
+      const audio = document.getElementById('bg-audio');
+      if (audio.paused) {
+        audio.play();
+      } else {
+        audio.pause();
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', renderPhotos);
+  </script>
+
+</body>
+</html>
