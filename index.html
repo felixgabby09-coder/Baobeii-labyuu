@@ -194,21 +194,30 @@
   </div>
 
   <script>
+    // Updated to match your exact repository details
     const repoOwner = 'felixgabby09-coder';
-    const repoName = 'Baobei-labidab';
+    const repoName = 'Baobeii-labyuu';
+
     let allPhotos = [];
     let currentFilter = 'All';
 
-    // 1-Request Fetcher with 10-Minute Smart Cache
     async function fetchAllRepoPhotos() {
-      const cacheKey = 'baobei_photos_cache';
-      const cacheTimeKey = 'baobei_photos_time';
+      const cacheKey = 'baobei_photos_cache_v3';
+      const cacheTimeKey = 'baobei_photos_time_v3';
+
+      // Clear any outdated/broken cache stored previously
+      localStorage.removeItem('baobei_photos_cache');
+      localStorage.removeItem('baobei_photos_cache_v2');
+
       const cachedData = localStorage.getItem(cacheKey);
       const cachedTime = localStorage.getItem(cacheTimeKey);
 
-      // Use cached list if less than 10 minutes old
-      if (cachedData && cachedTime && (Date.now() - cachedTime < 10 * 60 * 1000)) {
-        return JSON.parse(cachedData);
+      // Only use cache if it actually contains photos
+      if (cachedData && cachedTime && (Date.now() - cachedTime < 5 * 60 * 1000)) {
+        const parsed = JSON.parse(cachedData);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed;
+        }
       }
 
       try {
@@ -219,17 +228,23 @@
         if (!response.ok) throw new Error("API Limit or Repo Error");
 
         const data = await response.json();
-        const validPhotos = data.tree.filter(item => 
+        const validPhotos = (data.tree || []).filter(item => 
           item.type === 'blob' && 
           /^images\/month\d+\/.*\.(jpg|jpeg|png|webp|gif|heic)$/i.test(item.path)
         );
 
-        localStorage.setItem(cacheKey, JSON.stringify(validPhotos));
-        localStorage.setItem(cacheTimeKey, Date.now());
+        if (validPhotos.length > 0) {
+          localStorage.setItem(cacheKey, JSON.stringify(validPhotos));
+          localStorage.setItem(cacheTimeKey, Date.now());
+        } else {
+          localStorage.removeItem(cacheKey);
+        }
+
         return validPhotos;
       } catch (e) {
-        console.error("Cache fallback activated:", e);
-        return cachedData ? JSON.parse(cachedData) : [];
+        console.error("Fetch error:", e);
+        localStorage.removeItem(cacheKey);
+        return [];
       }
     }
 
@@ -245,7 +260,7 @@
 
       const filtered = currentFilter === 'All'
         ? allPhotos
-        : allPhotos.filter(item => item.path.startsWith(`images/${currentFilter}/`));
+        : allPhotos.filter(item => item.path.toLowerCase().startsWith(`images/${currentFilter.toLowerCase()}/`));
 
       if (filtered.length === 0) {
         grid.innerHTML = '<div class="loading-msg">No photos uploaded for this month yet!</div>';
@@ -261,7 +276,6 @@
         img.alt = "Memory";
         img.loading = "lazy";
 
-        // Fallback for repos using 'master' branch
         img.onerror = () => {
           img.src = `https://raw.githubusercontent.com/${repoOwner}/${repoName}/master/${item.path}`;
         };
