@@ -9,6 +9,7 @@
       --bg: #faf7f5;
       --card-bg: #ffffff;
       --accent: #e5989b;
+      --accent-hover: #b5838d;
       --text: #4a4e69;
     }
 
@@ -22,20 +23,75 @@
 
     header {
       text-align: center;
-      margin-bottom: 30px;
+      margin-bottom: 25px;
     }
 
     h1 {
       font-size: 2rem;
-      margin-bottom: 10px;
+      margin-bottom: 15px;
       color: #b5838d;
+    }
+
+    /* Anniversary Letter Card */
+    .letter-card {
+      max-width: 650px;
+      margin: 0 auto 30px auto;
+      background: var(--card-bg);
+      padding: 25px 30px;
+      border-radius: 20px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+      line-height: 1.7;
+      font-size: 0.98rem;
+      text-align: left;
+      border: 1px solid #f0e6e5;
+    }
+
+    .letter-card p {
+      margin-bottom: 15px;
+    }
+
+    .letter-card p:last-child {
+      margin-bottom: 0;
+      font-weight: bold;
+      color: var(--accent-hover);
+    }
+
+    /* Month Navigation Tabs */
+    .month-tabs {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 25px;
+    }
+
+    .tab-btn {
+      background: #f0e6e5;
+      color: var(--text);
+      border: none;
+      padding: 8px 16px;
+      border-radius: 15px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.88rem;
+      transition: all 0.2s ease;
+    }
+
+    .tab-btn:hover, .tab-btn.active {
+      background-color: var(--accent);
+      color: white;
+    }
+
+    .add-wrapper {
+      text-align: center;
+      margin-bottom: 25px;
     }
 
     .btn-add {
       background-color: var(--accent);
       color: white;
       border: none;
-      padding: 10px 18px;
+      padding: 10px 20px;
       border-radius: 20px;
       font-size: 0.9rem;
       cursor: pointer;
@@ -45,6 +101,7 @@
 
     .btn-add:hover {
       transform: scale(1.05);
+      background-color: var(--accent-hover);
     }
 
     /* Pinterest Masonry Layout */
@@ -94,43 +151,77 @@
 
   <header>
     <h1>Baobei & Labidab 1st Anniversary 💕</h1>
-    <button class="btn-add" onclick="addPhotoPrompt()">➕ Add Photo Link</button>
   </header>
+
+  <!-- Love Letter Section -->
+  <div class="letter-card">
+    <p>“I hate you. I don’t love you anymore. Just leave. I never should’ve forced us. Goodbye, I hope to never see you again.”</p>
+    <p>These are words you will never hear me say.</p>
+    <p>To my dearest baba, I love you. The affection I carry with me was molded in murky waters and heavy rain. It grew and grew, without stopping.</p>
+    <p>I am one for words, but the breath you take away whenever I see you takes away the right of speech from my body, only being able to express it through my love.</p>
+    <p>I know I love to show you I care with my words, but I believe for me, this time, simplicity wins. It matters not how I try to map out my feelings, just a single kiss could blow it all away.</p>
+    <p>I love you baba, I love you.</p>
+  </div>
+
+  <!-- Month Selection Tabs -->
+  <div class="month-tabs">
+    <button class="tab-btn active" onclick="switchMonth('All')">All</button>
+    <button class="tab-btn" onclick="switchMonth('Month 1')">Month 1</button>
+    <button class="tab-btn" onclick="switchMonth('Month 2')">Month 2</button>
+    <button class="tab-btn" onclick="switchMonth('Month 3')">Month 3</button>
+    <button class="tab-btn" onclick="switchMonth('Month 4')">Month 4</button>
+    <button class="tab-btn" onclick="switchMonth('Month 5')">Month 5</button>
+    <button class="tab-btn" onclick="switchMonth('Month 6')">Month 6</button>
+    <button class="tab-btn" onclick="switchMonth('Month 7')">Month 7</button>
+    <button class="tab-btn" onclick="switchMonth('Month 8')">Month 8</button>
+    <button class="tab-btn" onclick="switchMonth('Month 9')">Month 9</button>
+    <button class="tab-btn" onclick="switchMonth('Month 10')">Month 10</button>
+    <button class="tab-btn" onclick="switchMonth('Month 11')">Month 11</button>
+    <button class="tab-btn" onclick="switchMonth('Month 12')">Month 12</button>
+  </div>
+
+  <div class="add-wrapper">
+    <button class="btn-add" onclick="addPhotoPrompt()">➕ Add Photo Link</button>
+  </div>
 
   <div class="grid" id="photo-grid">
     <!-- Photos render here -->
   </div>
 
   <script>
-    // 1. Put ALL your permanent direct image links here!
-    // They MUST end in .jpg, .png, etc. (like Imgur direct links)
+    let activeMonth = 'All';
+
+    // Permanent photos array with assigned months!
+    // Simply add your new links with the month label.
     const defaultPhotos = [
-      "https://i.imgur.com/3bFOG1H.jpg",
-      "https://i.imgur.com/W3BpvbW.jpg"
-      // Add more links here separated by commas!
+      { url: "https://i.imgur.com/3bFOG1H.jpg", month: "Month 1" },
+      { url: "https://i.imgur.com/W3BpvbW.jpg", month: "Month 1" }
     ];
 
-    // 2. Load photos onto the page
     function renderPhotos() {
-      // Get temporary links saved in local browser storage
       const localPhotos = JSON.parse(localStorage.getItem('timelinePhotos')) || [];
-      
-      // Combine permanent code links + local test links (remove duplicates)
-      const allPhotos = Array.from(new Set([...defaultPhotos, ...localPhotos]));
+      const combinedPhotos = [...defaultPhotos, ...localPhotos];
+
+      // Remove duplicate URLs
+      const uniquePhotos = Array.from(new Map(combinedPhotos.map(item => [item.url, item])).values());
 
       const grid = document.getElementById('photo-grid');
       grid.innerHTML = '';
 
-      allPhotos.forEach(url => {
+      const filteredPhotos = uniquePhotos.filter(item => {
+        if (activeMonth === 'All') return true;
+        return item.month === activeMonth;
+      });
+
+      filteredPhotos.forEach(item => {
         const card = document.createElement('div');
         card.className = 'card';
 
         const img = document.createElement('img');
-        img.src = url;
+        img.src = item.url;
         img.alt = "Baobei & Labidab Memory";
         img.loading = "lazy";
 
-        // Remove broken links gracefully
         img.onerror = function() {
           card.remove();
         };
@@ -140,22 +231,33 @@
       });
     }
 
-    // 3. Quick test button logic
+    function switchMonth(monthName) {
+      activeMonth = monthName;
+      
+      // Update tab UI styling
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.innerText === monthName) btn.classList.add('active');
+      });
+
+      renderPhotos();
+    }
+
     function addPhotoPrompt() {
       let url = prompt("Paste your direct image URL (must end in .jpg or .png):");
       if (!url) return;
 
       url = url.trim();
 
-      // Convert imgur.com/3bFOG1H to i.imgur.com/3bFOG1H.jpg automatically if needed
       if (url.includes("imgur.com") && !url.includes("i.imgur.com")) {
         const id = url.split('/').pop();
         url = `https://i.imgur.com/${id}.jpg`;
       }
 
       if (url.startsWith("http")) {
+        const targetMonth = activeMonth === 'All' ? 'Month 1' : activeMonth;
         const localPhotos = JSON.parse(localStorage.getItem('timelinePhotos')) || [];
-        localPhotos.push(url);
+        localPhotos.push({ url: url, month: targetMonth });
         localStorage.setItem('timelinePhotos', JSON.stringify(localPhotos));
         renderPhotos();
       } else {
@@ -163,7 +265,6 @@
       }
     }
 
-    // Run when page loads
     document.addEventListener('DOMContentLoaded', renderPhotos);
   </script>
 
