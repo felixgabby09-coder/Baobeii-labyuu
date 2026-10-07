@@ -192,9 +192,9 @@
   <div class="grid" id="photo-grid"></div>
 
   <script>
-    // ============================================================
-    // YOUR PHOTO LIST (ADD YOUR FILENAMES BELOW FOR EACH MONTH)
-    // ============================================================
+    // ==========================================
+    // YOUR PHOTOS LIST FOR EACH MONTH
+    // ==========================================
     const myPhotos = {
       1: [
         'IMG_6200.jpeg', 'IMG_6203.jpeg', 'IMG_6217.jpeg',
@@ -202,15 +202,14 @@
         'IMG_6473.jpeg', 'IMG_6548.jpeg', 'IMG_6660.jpeg'
       ],
       2: [
-        // Put Month 2 photo names here when uploaded, e.g.:
-        // 'IMG_7001.jpeg', 'IMG_7002.png'
+        // Add your Month 2 photo file names here when ready, for example:
+        // 'IMG_7001.jpeg', 'IMG_7002.jpeg'
       ],
       3: [], 4: [], 5: [], 6: [],
       7: [], 8: [], 9: [], 10: [], 11: [], 12: []
     };
 
     let activeMonth = 'All';
-    const extensionsToTry = ['.jpeg', '.jpg', '.JPG', '.png', '.PNG', '.webp', '.heic'];
 
     function renderPhotos() {
       const grid = document.getElementById('photo-grid');
@@ -239,15 +238,16 @@
         img.alt = "Memory";
         img.loading = "lazy";
 
-        // Auto-fix extension case mismatches (.jpg vs .JPG vs .jpeg)
-        let extIndex = 0;
+        // Fallback for different image extensions (.jpeg, .JPG, .png, etc.)
         img.onerror = function() {
-          if (extIndex < extensionsToTry.length) {
-            const rawName = item.file.substring(0, item.file.lastIndexOf('.')) || item.file;
-            img.src = `images/month${item.month}/${rawName}${extensionsToTry[extIndex]}`;
-            extIndex++;
+          if (img.src.endsWith('.jpeg')) {
+            img.src = img.src.replace('.jpeg', '.JPG');
+          } else if (img.src.endsWith('.JPG')) {
+            img.src = img.src.replace('.JPG', '.png');
+          } else if (img.src.endsWith('.png')) {
+            img.src = img.src.replace('.png', '.PNG');
           } else {
-            card.style.display = 'none'; // Hide if file truly doesn't exist
+            card.style.display = 'none';
           }
         };
 
