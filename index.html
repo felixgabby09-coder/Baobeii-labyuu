@@ -3,278 +3,169 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Baobei ♡ Labidab</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <title>Baobei & Labidab 💖</title>
   <style>
     :root {
-      --bg-color: #fffafb;
-      --card-bg: rgba(255, 255, 255, 0.85);
-      --card-border: rgba(255, 182, 193, 0.45);
-      --primary-pink: #ff85a1;
-      --soft-pink: #fbb1bd;
-      --accent-rose: #c9184a;
-      --text-dark: #4a3e3d;
-      --text-muted: #8c7a7b;
-      --shadow-soft: 0 10px 30px rgba(255, 182, 193, 0.25);
+      --bg: #faf7f5;
+      --card-bg: #ffffff;
+      --accent: #e5989b;
+      --text: #4a4e69;
     }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', -apple-system, sans-serif; }
 
     body {
-      background-color: var(--bg-color);
-      background-image: 
-        radial-gradient(at 10% 10%, rgba(255, 229, 236, 0.85) 0px, transparent 50%),
-        radial-gradient(at 90% 90%, rgba(255, 202, 212, 0.6) 0px, transparent 50%);
-      background-attachment: fixed;
-      color: var(--text-dark);
-      overflow-x: hidden;
-      line-height: 1.6;
-      padding-bottom: 60px;
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      margin: 0;
+      padding: 20px;
     }
 
-    .music-widget {
-      position: fixed; top: 16px; right: 16px; z-index: 999;
-      background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px);
-      border: 1px solid var(--card-border); border-radius: 30px;
-      padding: 6px 14px; display: flex; align-items: center; gap: 8px;
-      box-shadow: 0 4px 15px rgba(255, 133, 161, 0.3); cursor: pointer;
+    header {
+      text-align: center;
+      margin-bottom: 30px;
     }
 
-    .music-btn {
-      background: var(--accent-rose); color: white; border: none;
-      width: 28px; height: 28px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 0.75rem; cursor: pointer;
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 10px;
+      color: #b5838d;
     }
 
-    .music-text { font-size: 0.75rem; font-weight: 600; color: #800f2f; }
-
-    .floating-hearts { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 0; }
-    .heart { position: absolute; color: rgba(255, 133, 161, 0.25); font-size: 18px; animation: float 8s infinite linear; }
-
-    @keyframes float {
-      0% { transform: translateY(105vh) rotate(0deg); opacity: 0; }
-      50% { opacity: 0.8; }
-      100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+    .btn-add {
+      background-color: var(--accent);
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      font-weight: bold;
+      transition: transform 0.2s;
     }
 
-    .container { max-width: 580px; margin: 0 auto; padding: 24px 16px; position: relative; z-index: 1; }
-    .hero { text-align: center; padding: 30px 10px 10px; }
-
-    .badge {
-      display: inline-flex; align-items: center; gap: 6px;
-      background: #ffe5ec; border: 1px solid #ffb3c1; color: #c9184a;
-      padding: 6px 16px; border-radius: 30px; font-size: 0.82rem; font-weight: 600;
-      margin-bottom: 16px; box-shadow: 0 4px 12px rgba(255, 179, 193, 0.3);
+    .btn-add:hover {
+      transform: scale(1.05);
     }
 
-    h1 { font-family: 'Playfair Display', serif; font-size: 2.5rem; font-weight: 700; color: #590d22; margin-bottom: 6px; }
-    .subtitle { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 24px; font-style: italic; }
-
-    .counter-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 30px; }
-    .counter-card {
-      background: var(--card-bg); backdrop-filter: blur(10px);
-      border: 1px solid var(--card-border); border-radius: 16px;
-      padding: 12px 6px; text-align: center; box-shadow: var(--shadow-soft);
+    /* Pinterest Masonry Layout */
+    .grid {
+      column-count: 2;
+      column-gap: 15px;
+      max-width: 1000px;
+      margin: 0 auto;
     }
 
-    .counter-value { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700; color: #a4133c; }
-    .counter-label { font-size: 0.68rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; }
-
-    section { margin-top: 36px; }
-    .section-title { font-family: 'Playfair Display', serif; font-size: 1.6rem; color: #590d22; text-align: center; margin-bottom: 20px; }
-
-    .month-card {
-      background: var(--card-bg); backdrop-filter: blur(12px);
-      border: 1px solid var(--card-border); border-radius: 20px;
-      margin-bottom: 16px; overflow: hidden; box-shadow: var(--shadow-soft);
+    @media (min-width: 768px) {
+      .grid {
+        column-count: 3;
+        column-gap: 20px;
+      }
     }
 
-    .month-header { padding: 18px 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
-    .month-title { font-weight: 700; font-size: 1rem; color: #800f2f; }
-    .month-date { font-size: 0.82rem; color: var(--text-muted); }
-
-    .month-content { display: none; padding: 16px; border-top: 1px dashed rgba(255, 182, 193, 0.4); text-align: center; }
-    .month-card.active .month-content { display: block; }
-
-    .add-url-btn {
-      background: linear-gradient(135deg, #ff85a1, #fbb1bd);
-      color: white; border: none; padding: 8px 18px; border-radius: 20px;
-      font-size: 0.8rem; font-weight: 600; cursor: pointer; margin-bottom: 14px;
-      box-shadow: 0 4px 12px rgba(255, 133, 161, 0.3);
+    @media (min-width: 1024px) {
+      .grid {
+        column-count: 4;
+      }
     }
 
-    .photo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
-    .photo-item { aspect-ratio: 1; border-radius: 12px; overflow: hidden; background: #fff; padding: 4px; border: 1px solid #ffe5ec; cursor: pointer; position: relative; }
-    .photo-item img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; }
+    .card {
+      break-inside: avoid;
+      margin-bottom: 15px;
+      background: var(--card-bg);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      transition: transform 0.2s ease;
+    }
 
-    .letter-card { background: var(--card-bg); backdrop-filter: blur(12px); border: 1px solid var(--card-border); border-radius: 24px; padding: 28px 22px; box-shadow: var(--shadow-soft); }
-    .letter-text { font-size: 0.96rem; line-height: 1.85; color: #4a3e3d; white-space: pre-line; }
+    .card:hover {
+      transform: translateY(-4px);
+    }
 
-    .lightbox { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(40, 20, 25, 0.85); backdrop-filter: blur(8px); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
-    .lightbox.active { display: flex; }
-    .lightbox img { max-width: 92%; max-height: 80vh; border-radius: 16px; }
+    .card img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 16px;
+    }
   </style>
 </head>
 <body>
 
-  <audio id="bgMusic" loop src="music.mp3"></audio>
+  <header>
+    <h1>Baobei & Labidab 1st Anniversary 💕</h1>
+    <button class="btn-add" onclick="addPhotoPrompt()">➕ Add Photo Link</button>
+  </header>
 
-  <div class="music-widget" onclick="toggleMusic()">
-    <button class="music-btn" id="musicBtn">▶</button>
-    <span class="music-text" id="musicStatus">Play Song 🎵</span>
-  </div>
-
-  <div class="floating-hearts" id="heartsContainer"></div>
-
-  <div class="container">
-    <div class="hero">
-      <div class="badge">✨ October 7, 2025 — October 7, 2026 ✨</div>
-      <h1>Baobei ♡ Labidab</h1>
-      <p class="subtitle">365 Days of Us</p>
-
-      <div class="counter-grid">
-        <div class="counter-card"><div class="counter-value" id="days">365</div><div class="counter-label">Days</div></div>
-        <div class="counter-card"><div class="counter-value" id="hours">00</div><div class="counter-label">Hours</div></div>
-        <div class="counter-card"><div class="counter-value" id="minutes">00</div><div class="counter-label">Mins</div></div>
-        <div class="counter-card"><div class="counter-value" id="seconds">00</div><div class="counter-label">Secs</div></div>
-      </div>
-    </div>
-
-    <section>
-      <h2 class="section-title">Our Timeline 🤍</h2>
-      <div id="timelineContainer"></div>
-    </section>
-
-    <section>
-      <h2 class="section-title">To My Dearest Baba 💌</h2>
-      <div class="letter-card">
-        <div class="letter-text">
-“I hate you. I don’t love you anymore. Just leave. I never should’ve forced us. Goodbye, I hope to never see you again.”
-
-These are words you will never hear me say.
-
-To my dearest baba, I love you. The affection I carry with me was molded in murky waters and heavy rain. It grew and grew, without stopping. 
-
-I am one for words, but the breath you take away whenever I see you takes away the right of speech from my body, only being able to express it through my love. 
-
-I know I love to show you I care with my words, but I believe for me, this time, simplicity wins. It matters not how I try to map out my feelings, just a single kiss could blow it all away.
-
-I love you baba, I love you.
-        </div>
-      </div>
-    </section>
-  </div>
-
-  <div class="lightbox" id="lightbox" onclick="this.classList.remove('active')">
-    <img id="lightboxImg" src="">
+  <div class="grid" id="photo-grid">
+    <!-- Photos render here -->
   </div>
 
   <script>
-    const months = [
-      "October 2025", "November 2025", "December 2025", "January 2026",
-      "February 2026", "March 2026", "April 2026", "May 2026",
-      "June 2026", "July 2026", "August 2026", "September 2026"
+    // 1. Put ALL your permanent direct image links here!
+    // They MUST end in .jpg, .png, etc. (like Imgur direct links)
+    const defaultPhotos = [
+      "https://i.imgur.com/3bFOG1H.jpg",
+      "https://i.imgur.com/W3BpvbW.jpg"
+      // Add more links here separated by commas!
     ];
 
-    const container = document.getElementById('timelineContainer');
+    // 2. Load photos onto the page
+    function renderPhotos() {
+      // Get temporary links saved in local browser storage
+      const localPhotos = JSON.parse(localStorage.getItem('timelinePhotos')) || [];
+      
+      // Combine permanent code links + local test links (remove duplicates)
+      const allPhotos = Array.from(new Set([...defaultPhotos, ...localPhotos]));
 
-    months.forEach((dateStr, i) => {
-      const monthNum = i + 1;
-      const monthKey = `urls_month_${monthNum}`;
-      const monthCard = document.createElement('div');
-      monthCard.className = `month-card ${i === 0 ? 'active' : ''}`;
+      const grid = document.getElementById('photo-grid');
+      grid.innerHTML = '';
 
-      monthCard.innerHTML = `
-        <div class="month-header" onclick="this.parentElement.classList.toggle('active')">
-          <div class="month-title">Month ${String(monthNum).padStart(2, '0')}</div>
-          <div class="month-date">${dateStr} ▾</div>
-        </div>
-        <div class="month-content">
-          <button class="add-url-btn" onclick="addPhotoUrl('${monthKey}')">➕ Add Photo Link</button>
-          <div class="photo-grid" id="grid_${monthKey}"></div>
-        </div>
-      `;
-      container.appendChild(monthCard);
-      renderPhotos(monthKey);
-    });
+      allPhotos.forEach(url => {
+        const card = document.createElement('div');
+        card.className = 'card';
 
-    function addPhotoUrl(key) {
-      const url = prompt("Paste your photo link (from Imgur, Pinterest, etc.):");
+        const img = document.createElement('img');
+        img.src = url;
+        img.alt = "Baobei & Labidab Memory";
+        img.loading = "lazy";
+
+        // Remove broken links gracefully
+        img.onerror = function() {
+          card.remove();
+        };
+
+        card.appendChild(img);
+        grid.appendChild(card);
+      });
+    }
+
+    // 3. Quick test button logic
+    function addPhotoPrompt() {
+      let url = prompt("Paste your direct image URL (must end in .jpg or .png):");
       if (!url) return;
 
-      const existing = JSON.parse(localStorage.getItem(key) || "[]");
-      existing.push(url);
-      localStorage.setItem(key, JSON.stringify(existing));
-      renderPhotos(key);
-    }
+      url = url.trim();
 
-    function renderPhotos(key) {
-      const grid = document.getElementById(`grid_${key}`);
-      const urls = JSON.parse(localStorage.getItem(key) || "[]");
-
-      if (urls.length === 0) {
-        grid.innerHTML = `<p style="font-size:0.8rem; color:#8c7a7b; grid-column:span 3;">No photos added yet ♡</p>`;
-        return;
+      // Convert imgur.com/3bFOG1H to i.imgur.com/3bFOG1H.jpg automatically if needed
+      if (url.includes("imgur.com") && !url.includes("i.imgur.com")) {
+        const id = url.split('/').pop();
+        url = `https://i.imgur.com/${id}.jpg`;
       }
 
-      grid.innerHTML = urls.map(url => `
-        <div class="photo-item" onclick="openLightbox('${url}')">
-          <img src="${url}" loading="lazy">
-        </div>
-      `).join('');
-    }
-
-    function openLightbox(src) {
-      document.getElementById('lightboxImg').src = src;
-      document.getElementById('lightbox').classList.add('active');
-    }
-
-    const audio = document.getElementById('bgMusic');
-    function toggleMusic() {
-      const btn = document.getElementById('musicBtn');
-      const status = document.getElementById('musicStatus');
-      if (audio.paused) {
-        audio.play();
-        btn.textContent = '⏸';
-        status.textContent = 'Playing 🎵';
+      if (url.startsWith("http")) {
+        const localPhotos = JSON.parse(localStorage.getItem('timelinePhotos')) || [];
+        localPhotos.push(url);
+        localStorage.setItem('timelinePhotos', JSON.stringify(localPhotos));
+        renderPhotos();
       } else {
-        audio.pause();
-        btn.textContent = '▶';
-        status.textContent = 'Play Song 🎵';
+        alert("Please paste a valid web address starting with http:// or https://");
       }
     }
 
-    const heartsContainer = document.getElementById('heartsContainer');
-    for (let i = 0; i < 12; i++) {
-      const heart = document.createElement('div');
-      heart.className = 'heart';
-      heart.innerHTML = '♡';
-      heart.style.left = Math.random() * 100 + 'vw';
-      heart.style.animationDuration = (6 + Math.random() * 6) + 's';
-      heart.style.animationDelay = Math.random() * 5 + 's';
-      heartsContainer.appendChild(heart);
-    }
-
-    const startDate = new Date('2025-10-07T00:00:00').getTime();
-    function updateCounter() {
-      const now = new Date().getTime();
-      const diff = Math.max(0, now - startDate);
-      
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-      document.getElementById('days').textContent = days;
-      document.getElementById('hours').textContent = String(hours).padStart(2, '0');
-      document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
-      document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
-    }
-    setInterval(updateCounter, 1000);
-    updateCounter();
+    // Run when page loads
+    document.addEventListener('DOMContentLoaded', renderPhotos);
   </script>
+
 </body>
 </html>
