@@ -82,28 +82,6 @@
       color: white;
     }
 
-    .add-wrapper {
-      text-align: center;
-      margin-bottom: 25px;
-    }
-
-    .btn-add {
-      background-color: var(--accent);
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 20px;
-      font-size: 0.9rem;
-      cursor: pointer;
-      font-weight: bold;
-      transition: transform 0.2s;
-    }
-
-    .btn-add:hover {
-      transform: scale(1.05);
-      background-color: var(--accent-hover);
-    }
-
     /* Pinterest Masonry Layout */
     .grid {
       column-count: 2;
@@ -145,6 +123,14 @@
       display: block;
       border-radius: 16px;
     }
+
+    .loading-msg {
+      text-align: center;
+      font-style: italic;
+      color: #888;
+      grid-column: 1 / -1;
+      padding: 20px;
+    }
   </style>
 </head>
 <body>
@@ -165,107 +151,83 @@
 
   <!-- Month Selection Tabs -->
   <div class="month-tabs">
-    <button class="tab-btn active" onclick="switchMonth('All')">All</button>
-    <button class="tab-btn" onclick="switchMonth('Month 1')">Month 1</button>
-    <button class="tab-btn" onclick="switchMonth('Month 2')">Month 2</button>
-    <button class="tab-btn" onclick="switchMonth('Month 3')">Month 3</button>
-    <button class="tab-btn" onclick="switchMonth('Month 4')">Month 4</button>
-    <button class="tab-btn" onclick="switchMonth('Month 5')">Month 5</button>
-    <button class="tab-btn" onclick="switchMonth('Month 6')">Month 6</button>
-    <button class="tab-btn" onclick="switchMonth('Month 7')">Month 7</button>
-    <button class="tab-btn" onclick="switchMonth('Month 8')">Month 8</button>
-    <button class="tab-btn" onclick="switchMonth('Month 9')">Month 9</button>
-    <button class="tab-btn" onclick="switchMonth('Month 10')">Month 10</button>
-    <button class="tab-btn" onclick="switchMonth('Month 11')">Month 11</button>
-    <button class="tab-btn" onclick="switchMonth('Month 12')">Month 12</button>
-  </div>
-
-  <div class="add-wrapper">
-    <button class="btn-add" onclick="addPhotoPrompt()">➕ Add Photo Link</button>
+    <button class="tab-btn active" onclick="switchMonth('All', this)">All</button>
+    <button class="tab-btn" onclick="switchMonth('month1', this)">Month 1</button>
+    <button class="tab-btn" onclick="switchMonth('month2', this)">Month 2</button>
+    <button class="tab-btn" onclick="switchMonth('month3', this)">Month 3</button>
+    <button class="tab-btn" onclick="switchMonth('month4', this)">Month 4</button>
+    <button class="tab-btn" onclick="switchMonth('month5', this)">Month 5</button>
+    <button class="tab-btn" onclick="switchMonth('month6', this)">Month 6</button>
+    <button class="tab-btn" onclick="switchMonth('month7', this)">Month 7</button>
+    <button class="tab-btn" onclick="switchMonth('month8', this)">Month 8</button>
+    <button class="tab-btn" onclick="switchMonth('month9', this)">Month 9</button>
+    <button class="tab-btn" onclick="switchMonth('month10', this)">Month 10</button>
+    <button class="tab-btn" onclick="switchMonth('month11', this)">Month 11</button>
+    <button class="tab-btn" onclick="switchMonth('month12', this)">Month 12</button>
   </div>
 
   <div class="grid" id="photo-grid">
-    <!-- Photos render here -->
+    <div class="loading-msg">Loading memories...</div>
   </div>
 
   <script>
     let activeMonth = 'All';
+    const repoOwner = 'felixgabby09-coder';
+    const repoName = 'Baobei-labidab';
 
-    // Permanent photos array with assigned months!
-    // Simply add your new links with the month label.
-    const defaultPhotos = [
-      { url: "https://i.imgur.com/3bFOG1H.jpg", month: "Month 1" },
-      { url: "https://i.imgur.com/W3BpvbW.jpg", month: "Month 1" }
-    ];
-
-    function renderPhotos() {
-      const localPhotos = JSON.parse(localStorage.getItem('timelinePhotos')) || [];
-      const combinedPhotos = [...defaultPhotos, ...localPhotos];
-
-      // Remove duplicate URLs
-      const uniquePhotos = Array.from(new Map(combinedPhotos.map(item => [item.url, item])).values());
-
+    async function loadPhotosFromGitHub() {
       const grid = document.getElementById('photo-grid');
+      grid.innerHTML = '<div class="loading-msg">Loading memories...</div>';
+
+      const monthsToLoad = activeMonth === 'All' 
+        ? ['month1', 'month2', 'month3', 'month4', 'month5', 'month6', 'month7', 'month8', 'month9', 'month10', 'month11', 'month12'] 
+        : [activeMonth];
+
+      let totalImages = 0;
       grid.innerHTML = '';
 
-      const filteredPhotos = uniquePhotos.filter(item => {
-        if (activeMonth === 'All') return true;
-        return item.month === activeMonth;
-      });
+      for (const month of monthsToLoad) {
+        try {
+          const response = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/images/${month}`);
+          if (!response.ok) continue;
 
-      filteredPhotos.forEach(item => {
-        const card = document.createElement('div');
-        card.className = 'card';
+          const files = await response.json();
 
-        const img = document.createElement('img');
-        img.src = item.url;
-        img.alt = "Baobei & Labidab Memory";
-        img.loading = "lazy";
+          files.forEach(file => {
+            if (/\.(jpg|jpeg|png|webp|gif|heic)$/i.test(file.name)) {
+              totalImages++;
+              const card = document.createElement('div');
+              card.className = 'card';
 
-        img.onerror = function() {
-          card.remove();
-        };
+              const img = document.createElement('img');
+              img.src = file.download_url;
+              img.alt = "Baobei & Labidab Memory";
+              img.loading = "lazy";
 
-        card.appendChild(img);
-        grid.appendChild(card);
-      });
+              card.appendChild(img);
+              grid.appendChild(card);
+            }
+          });
+        } catch (e) {
+          console.error(`Could not load images for ${month}:`, e);
+        }
+      }
+
+      if (totalImages === 0) {
+        grid.innerHTML = '<div class="loading-msg">No photos uploaded for this month yet!</div>';
+      }
     }
 
-    function switchMonth(monthName) {
-      activeMonth = monthName;
+    function switchMonth(folderName, btnElement) {
+      activeMonth = folderName;
       
-      // Update tab UI styling
-      document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.remove('active');
-        if (btn.innerText === monthName) btn.classList.add('active');
-      });
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      btnElement.classList.add('active');
 
-      renderPhotos();
+      loadPhotosFromGitHub();
     }
 
-    function addPhotoPrompt() {
-      let url = prompt("Paste your direct image URL (must end in .jpg or .png):");
-      if (!url) return;
-
-      url = url.trim();
-
-      if (url.includes("imgur.com") && !url.includes("i.imgur.com")) {
-        const id = url.split('/').pop();
-        url = `https://i.imgur.com/${id}.jpg`;
-      }
-
-      if (url.startsWith("http")) {
-        const targetMonth = activeMonth === 'All' ? 'Month 1' : activeMonth;
-        const localPhotos = JSON.parse(localStorage.getItem('timelinePhotos')) || [];
-        localPhotos.push({ url: url, month: targetMonth });
-        localStorage.setItem('timelinePhotos', JSON.stringify(localPhotos));
-        renderPhotos();
-      } else {
-        alert("Please paste a valid web address starting with http:// or https://");
-      }
-    }
-
-    document.addEventListener('DOMContentLoaded', renderPhotos);
+    document.addEventListener('DOMContentLoaded', loadPhotosFromGitHub);
   </script>
 
 </body>
