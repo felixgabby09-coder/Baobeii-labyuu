@@ -1,197 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Baobei & Labidab 💖</title>
-  <style>
-    :root {
-      --bg: #fff0f3;
-      --card-bg: #ffffff;
-      --accent: #ff85a1;
-      --accent-hover: #b5838d;
-      --text: #4a4e69;
-    }
-
-    body {
-      background-color: var(--bg);
-      color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      margin: 0;
-      padding: 20px;
-    }
-
-    header {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    h1 {
-      font-size: 2.2rem;
-      margin-bottom: 10px;
-      color: #b5838d;
-    }
-
-    .music-container {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    .music-btn {
-      background: var(--accent);
-      color: white;
-      border: none;
-      padding: 8px 18px;
-      border-radius: 20px;
-      font-weight: bold;
-      cursor: pointer;
-      font-size: 0.9rem;
-      box-shadow: 0 4px 10px rgba(255, 133, 161, 0.25);
-      transition: transform 0.2s;
-    }
-
-    .music-btn:hover {
-      transform: scale(1.05);
-    }
-
-    .letter-card {
-      max-width: 650px;
-      margin: 0 auto 30px auto;
-      background: var(--card-bg);
-      padding: 25px 30px;
-      border-radius: 20px;
-      box-shadow: 0 4px 15px rgba(255, 133, 161, 0.1);
-      line-height: 1.7;
-      font-size: 0.98rem;
-      text-align: left;
-      border: 1px solid #ffccd5;
-    }
-
-    .letter-card p {
-      margin-bottom: 15px;
-    }
-
-    .letter-card p:last-child {
-      margin-bottom: 0;
-      font-weight: bold;
-      color: var(--accent-hover);
-    }
-
-    .month-tabs {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 25px;
-    }
-
-    .tab-btn {
-      background: #ffffff;
-      color: var(--text);
-      border: 1px solid #ffccd5;
-      padding: 8px 16px;
-      border-radius: 15px;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 0.88rem;
-      transition: all 0.2s ease;
-    }
-
-    .tab-btn:hover, .tab-btn.active {
-      background-color: var(--accent);
-      color: white;
-      border-color: var(--accent);
-    }
-
-    .grid {
-      column-count: 2;
-      column-gap: 15px;
-      max-width: 1000px;
-      margin: 0 auto;
-    }
-
-    @media (min-width: 768px) {
-      .grid { column-count: 3; column-gap: 20px; }
-    }
-
-    @media (min-width: 1024px) {
-      .grid { column-count: 4; }
-    }
-
-    .card {
-      break-inside: avoid;
-      margin-bottom: 15px;
-      background: var(--card-bg);
-      border-radius: 16px;
-      overflow: hidden;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-      transition: transform 0.2s ease;
-      padding: 6px;
-      border: 1px solid #ffe0e6;
-    }
-
-    .card:hover {
-      transform: translateY(-4px);
-    }
-
-    .card img {
-      width: 100%;
-      height: auto;
-      display: block;
-      border-radius: 12px;
-    }
-
-    .loading-msg {
-      column-span: all;
-      text-align: center;
-      font-style: italic;
-      color: #888;
-      padding: 20px;
-      width: 100%;
-    }
-  </style>
-</head>
-<body>
-
-  <header>
-    <h1>Baobei & Labidab 1st Anniversary 💖</h1>
-  </header>
-
-  <div class="music-container">
-    <button class="music-btn" onclick="toggleAudio()">🎵 Play / Pause Music</button>
-    <audio id="bg-audio" loop>
-      <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=lofi-study-112191.mp3" type="audio/mpeg">
-    </audio>
-  </div>
-
-  <div class="letter-card">
-    <p>“I hate you. I don’t love you anymore. Just leave. I never should’ve forced us. Goodbye, I hope to never see you again.”</p>
-    <p>These are words you will never hear me say.</p>
-    <p>To my dearest baba, I love you. The affection I carry with me was molded in murky waters and heavy rain. It grew and grew, without stopping.</p>
-    <p>I am one for words, but the breath you take away whenever I see you takes away the right of speech from my body, only being able to express it through my love.</p>
-    <p>I know I love to show you I care with my words, but I believe for me, this time, simplicity wins. It matters not how I try to map out my feelings, just a single kiss could blow it all away.</p>
-    <p>I love you baba, I love you.</p>
-  </div>
-
-  <div class="month-tabs">
-    <button class="tab-btn active" onclick="switchMonth('All', this)">All</button>
-    <button class="tab-btn" onclick="switchMonth(1, this)">Month 1</button>
-    <button class="tab-btn" onclick="switchMonth(2, this)">Month 2</button>
-    <button class="tab-btn" onclick="switchMonth(3, this)">Month 3</button>
-    <button class="tab-btn" onclick="switchMonth(4, this)">Month 4</button>
-    <button class="tab-btn" onclick="switchMonth(5, this)">Month 5</button>
-    <button class="tab-btn" onclick="switchMonth(6, this)">Month 6</button>
-    <button class="tab-btn" onclick="switchMonth(7, this)">Month 7</button>
-    <button class="tab-btn" onclick="switchMonth(8, this)">Month 8</button>
-    <button class="tab-btn" onclick="switchMonth(9, this)">Month 9</button>
-    <button class="tab-btn" onclick="switchMonth(10, this)">Month 10</button>
-    <button class="tab-btn" onclick="switchMonth(11, this)">Month 11</button>
-    <button class="tab-btn" onclick="switchMonth(12, this)">Month 12</button>
-  </div>
-
-  <div class="grid" id="photo-grid"></div>
-
-  <script>
+<script>
     // ==========================================
     // YOUR PHOTOS LIST FOR EACH MONTH
     // ==========================================
@@ -244,18 +51,23 @@
         card.className = 'card';
 
         const img = document.createElement('img');
-        img.src = `images/month${item.month}/${item.file}`;
+        
+        // If it's Month 5, pull directly from the main images folder where they were dropped
+        if (item.month === 5) {
+          img.src = `images/${item.file}`;
+        } else {
+          img.src = `images/month${item.month}/${item.file}`;
+        }
+
         img.alt = "Memory";
         img.loading = "lazy";
 
-        // Fallback for different image extensions (.jpeg, .JPG, .png, etc.)
+        // Fallback for different image extensions
         img.onerror = function() {
           if (img.src.endsWith('.jpeg')) {
             img.src = img.src.replace('.jpeg', '.JPG');
           } else if (img.src.endsWith('.JPG')) {
             img.src = img.src.replace('.JPG', '.png');
-          } else if (img.src.endsWith('.png')) {
-            img.src = img.src.replace('.png', '.PNG');
           } else {
             card.style.display = 'none';
           }
@@ -284,6 +96,3 @@
 
     document.addEventListener('DOMContentLoaded', renderPhotos);
   </script>
-
-</body>
-</html>
